@@ -25,7 +25,7 @@
 </head><body>
 <div class="app">
 <aside class="sidebar">
-  <section class="brand"><div class="eyebrow"><span class="logo-dot"></span> KKOSO MARKET INTELLIGENCE</div><h1>파리 패스트캐주얼<br>경쟁 매장 지도</h1><p class="subtitle">브랜드별 입지 분포를 보고, 꼬소의 첫 매장 후보 상권을 조사하기 위한 작업용 지도.</p><div class="tagrow"><span class="tag">v0.1.7 · EPT 경계 + 경쟁 매장 추가 + 구역별 집계</span><span class="tag">조사 기준 2026.10.27</span><span class="tag">브랜드·매장 필터</span></div></section>
+  <section class="brand"><div class="eyebrow"><span class="logo-dot"></span> KKOSO MARKET INTELLIGENCE</div><h1>파리 패스트캐주얼<br>경쟁 매장 지도</h1><p class="subtitle">브랜드별 입지 분포를 보고, 꼬소의 첫 매장 후보 상권을 조사하기 위한 작업용 지도.</p><div class="tagrow"><span class="tag">v0.1.8 · The Salad Project 추가</span><span class="tag">조사 기준 2026.10.27</span><span class="tag">브랜드·매장 필터</span></div></section>
   <section class="panel"><h2>OVERVIEW</h2><div class="stats"><div class="stat"><strong id="totalCount">0</strong><span>등록 매장 (폐점 포함)</span></div><div class="stat"><strong id="visibleCount">0</strong><span>현재 표시</span></div><div class="stat"><strong id="brandCount">0</strong><span>표시 브랜드</span></div></div></section>
   <section class="panel"><h2>SEARCH & FILTER</h2><div class="search"><input id="search" type="search" placeholder="브랜드, 지역, 거리명 검색" autocomplete="off" aria-label="매장 검색"></div><div class="fieldline"><select id="district" aria-label="구 선택"><option value="all">파리 전체 + 근교</option></select><select id="category" aria-label="유형 선택"><option value="all">모든 유형</option></select></div></section>
   <section class="panel"><div class="row"><h2 style="margin:0">BRANDS</h2><span id="brandSelected" class="small" style="color:var(--muted)"></span></div><div class="brandlist" id="brandList" style="margin-top:12px"></div><div class="brand-actions"><button class="softbtn" id="selectAll">전체 선택</button><button class="softbtn" id="selectNone">전체 해제</button><button class="softbtn" id="onlyFav">★ 즐겨찾기만</button></div></section>
@@ -2491,9 +2491,23 @@ const INITIAL=[
     "remark": "브랜드 공식 주문 목록 확인",
     "geo": "approx",
     "status": "listed"
+  },
+  {
+    "id": "s260",
+    "brand": "The Salad Project",
+    "name": "The Salad Project · Sentier",
+    "address": "107 Rue Réaumur, 75002 Paris, France",
+    "district": 2,
+    "lat": 48.8681,
+    "lon": 2.3439,
+    "source": "https://www.saladproject.fr/pages/locations",
+    "category": "볼·조립형",
+    "remark": "런던 출신 프리미엄 샐러드·프로틴볼 패스트캐주얼. 2026-09-21 파리 첫 매장 오픈. 매장 공식 명단과 주소 확인, 지도 핀은 임시 좌표.",
+    "geo": "approx",
+    "status": "listed"
   }
 ];
-const BRAND_COLORS={'Pokawa':'#59d5de','Pitaya':'#ff756a','Jour':'#9de2aa','Pierre Sang Express':'#ffb460','Mister Garden':'#c5d774','MOÖ':'#f8ce74','Dubble':'#a28eff','Cojean':'#90b6e8','Fresh Burritos':'#f2a46d','Street Bangkok':'#d876e5','Bolkiri':'#65e3b2','Chikin Bang':'#ff8eb5','Poke House':'#7fd4ff','EXKi':'#a7ef83','O’Tacos':'#f9b06f','Big Fernand':'#f07d6a','Chipotle':'#f2a35e','Joe & The Juice':'#ffa267','Vapiano':'#e1a6fc','itsu':'#a3c3cc'};
+const BRAND_COLORS={'Pokawa':'#59d5de','Pitaya':'#ff756a','Jour':'#9de2aa','Pierre Sang Express':'#ffb460','Mister Garden':'#c5d774','MOÖ':'#f8ce74','Dubble':'#a28eff','Cojean':'#90b6e8','Fresh Burritos':'#f2a46d','Street Bangkok':'#d876e5','Bolkiri':'#65e3b2','Chikin Bang':'#ff8eb5','Poke House':'#7fd4ff','EXKi':'#a7ef83','O’Tacos':'#f9b06f','Big Fernand':'#f07d6a','Chipotle':'#f2a35e','Joe & The Juice':'#ffa267','Vapiano':'#e1a6fc','itsu':'#a3c3cc','The Salad Project':'#d3ed7f'};
 const CATEGORIES=[...new Set(INITIAL.map(x=>x.category))];const LSKEY='kkoso_market_map_v01';const GEO_KEY='kkoso_market_geo_cache_v01';
 const $=(id)=>document.getElementById(id);
 const EPT_LABELS=['Paris Ouest La Défense','Boucle Nord de Seine','Grand Paris Seine Ouest','Vallée Sud - Grand Paris','Grand-Orly Seine Bièvre','Paris Est Marne & Bois','Grand Paris Sud Est Avenir','Est Ensemble','Plaine Commune',"Paris Terres d'Envol",'Grand Paris Grand Est'];
