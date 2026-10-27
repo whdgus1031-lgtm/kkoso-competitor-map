@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="color-scheme" content="dark">
+<title>KKOSO | Paris Fast-Casual Competitor Map</title>
+<link rel="preconnect" href="https://tile.openstreetmap.fr">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{--bg:#090f19;--sidebar:#101a28;--panel:#142234;--panel2:#1a2c42;--line:#2b3b4f;--txt:#eff5fb;--muted:#93a8be;--orange:#ff9653;--aqua:#75d2d8;--good:#89d9bc}
+*{box-sizing:border-box}html,body{height:100%;margin:0;background:var(--bg);font-family:Inter,Pretendard,"Noto Sans KR",system-ui,-apple-system,BlinkMacSystemFont,sans-serif;color:var(--txt);font-size:14px}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}a{color:#9bd9ff}
+.app{height:100dvh;min-height:540px;display:grid;grid-template-columns:375px minmax(0,1fr)}.sidebar{z-index:1100;min-width:0;background:var(--sidebar);border-right:1px solid var(--line);overflow:auto;scrollbar-color:#425a70 transparent;display:flex;flex-direction:column}.brand{padding:25px 22px 19px;border-bottom:1px solid var(--line);background:radial-gradient(circle at 100% 0%,#2b2e37,transparent 60%)}.eyebrow{font-size:11px;letter-spacing:.16em;font-weight:800;color:#f8bb93;display:flex;align-items:center;gap:8px}.logo-dot{display:inline-block;background:var(--orange);height:8px;width:8px;border-radius:50%;box-shadow:0 0 12px #ff965381}.brand h1{font-size:25px;letter-spacing:-.9px;line-height:1.2;margin:12px 0 8px}.subtitle{font-size:12px;line-height:1.65;color:var(--muted);margin:0}.tagrow{margin-top:13px;display:flex;flex-wrap:wrap;gap:6px}.tag{border:1px solid #41516a;color:#cbd7e3;border-radius:7px;padding:5px 8px;font-size:10px;background:#1b293b}
+.panel{border-bottom:1px solid var(--line);padding:17px 19px}.panel h2{color:#dce8f4;font-size:11px;letter-spacing:.09em;text-transform:uppercase;margin:0 0 12px;font-weight:800}.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}.stat{background:#182b3f;padding:11px 9px;border:1px solid #344a5f;border-radius:10px;min-width:0}.stat strong{font-size:22px;line-height:1;font-weight:800;font-variant-numeric:tabular-nums;display:block;margin-bottom:5px}.stat span{font-size:10px;color:#9bb1c7}.search{position:relative}.search input{background:#0d1826;border:1px solid #3a4f64;border-radius:11px;color:var(--txt);outline:0;width:100%;padding:12px 13px 12px 35px;font-size:13px}.search:before{content:'⌕';font-size:23px;position:absolute;left:11px;top:6px;color:#81a5bf}.search input:focus{border-color:#7fb9d0}.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.fieldline{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.fieldline select{width:100%;padding:9px 8px;border-radius:8px;background:#101f2f;border:1px solid #35465c;color:#dce8f4;font-size:12px}
+.brandlist{display:flex;flex-wrap:wrap;gap:7px}.brand-chip{display:flex;align-items:center;gap:7px;border-radius:100px;padding:7px 10px;background:#112034;color:#cbd8e6;border:1px solid #33465c;font-size:11px;font-weight:700;transition:.15s}.brand-chip.active{background:#28425a;color:white;border-color:#749bb3}.brand-chip .b-dot{height:8px;width:8px;border-radius:50%;display:inline-block}.brand-chip small{font-size:10px;opacity:.75}.brand-actions{margin-top:10px;display:flex;gap:7px}.softbtn{background:#172b40;border:1px solid #375068;color:#d2e7f5;border-radius:9px;padding:8px 10px;font-size:11px;font-weight:750}.softbtn:hover{background:#25445f}.callout{padding:11px 12px;border:1px solid #3e5369;background:#172838;border-radius:10px;font-size:11px;color:#afc3d5;line-height:1.6}.callout b{color:#e6f1fb}.listwrap{padding:15px 19px 25px;flex:1}.listhead{display:flex;justify-content:space-between;gap:9px;align-items:center;margin-bottom:9px}.listhead h2{font-size:12px;margin:0}.listhead select{background:#18283b;border:1px solid #32475c;color:#cbdbea;border-radius:7px;font-size:11px;padding:6px}.storelist{display:grid;gap:8px}.store-card{padding:11px;border-radius:11px;background:#16283a;border:1px solid #2d4158;display:grid;gap:5px;cursor:pointer;transition:.15s;text-align:left;width:100%;color:inherit}.store-card:hover,.store-card:focus-visible{border-color:#78a8c7;background:#1e354b}.store-card-top{display:flex;align-items:center;justify-content:space-between;gap:7px}.store-title{display:flex;align-items:center;gap:8px;min-width:0}.brand-icon{width:11px;height:11px;border-radius:4px;flex-shrink:0}.store-title strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}.store-address{color:#99b1c8;font-size:11px;line-height:1.3;padding-left:19px}.store-tags{font-size:10px;color:#829bb1;padding-left:19px;display:flex;gap:8px}.favbtn{background:none;border:0;color:#9cbbd5;font-size:19px;padding:0 3px;line-height:1}.favbtn.on{color:#ffca6e}.empty{color:#9cb0c8;font-size:12px;padding:24px 4px;text-align:center;line-height:1.5}.footer{padding:14px 18px 24px;font-size:10px;color:#8da4bb;line-height:1.65;border-top:1px solid var(--line)}.tools{display:grid;grid-template-columns:1fr 1fr;gap:7px}.mainbtn{border:1px solid #f1a06c;background:#b76c3a;color:#fff5e9;font-weight:800;border-radius:10px;padding:11px;font-size:12px}.mainbtn:hover{background:#c47d49}.maparea{position:relative;min-width:0;overflow:hidden}#map{position:absolute;inset:0;background:#0b1826}.maptop{position:absolute;z-index:700;top:13px;left:14px;display:flex;gap:7px;pointer-events:none;flex-wrap:wrap}.floatbtn{pointer-events:auto;background:rgba(14,27,44,.94);color:#eaf4ff;border:1px solid #43576c;padding:9px 12px;box-shadow:0 4px 15px #0005;border-radius:10px;font-size:11px;font-weight:750;backdrop-filter:blur(8px)}.floatbtn:hover{border-color:#93b7cf}.map-note{position:absolute;z-index:700;left:14px;bottom:15px;max-width:min(410px,calc(100% - 28px));background:#101e30e8;border:1px solid #3b4c60;border-radius:10px;color:#b6ccdb;padding:9px 11px;font-size:10px;line-height:1.5;pointer-events:none}.legend{position:absolute;z-index:700;right:13px;bottom:24px;background:#142334ef;border:1px solid #395064;border-radius:11px;padding:10px 12px;box-shadow:0 8px 25px #0007;max-width:170px}.legend b{display:block;font-size:10px;color:#eff4fd;margin-bottom:6px}.legend-inner{display:flex;flex-direction:column;gap:5px;max-height:186px;overflow:auto}.legend-item{display:flex;align-items:center;gap:7px;color:#bcd1e1;font-size:10px;white-space:nowrap}.legend-swatch{height:9px;width:9px;border-radius:50%;flex-shrink:0}.pin-hit{display:flex;align-items:center;justify-content:center;width:22px;height:22px;cursor:pointer}.pin-dot{display:block;width:9px;height:9px;flex:none;border-radius:50%;border:1.5px solid #f5faff;box-shadow:0 0 0 1px #09131aaa,0 1px 4px #0009}.pin-dot.approx{border:1.5px dashed #f4f8ff;box-shadow:0 0 0 1px #10182380}.leaflet-div-icon{background:transparent;border:0}
+/* District boundary and label overlay, always below shop markers */
+.district-tag-wrap{background:transparent;border:0;pointer-events:none!important}.district-tag{width:100%;text-align:center;display:inline-block;padding:3px 6px;border:1px solid #9cc4d880;background:#10253ac9;color:#ebf6ff;border-radius:7px;font-size:11px;font-weight:800;line-height:1.1;white-space:nowrap;box-shadow:0 2px 8px #0005;letter-spacing:-.3px;text-shadow:0 1px 2px #000a}
+.district-options{position:absolute;z-index:700;top:58px;left:14px;display:flex;gap:7px;flex-wrap:wrap}.district-option{display:inline-flex;align-items:center;gap:6px;padding:7px 9px;border:1px solid #49657c;border-radius:9px;background:#102139ef;color:#d8edfa;font-size:11px;font-weight:700;backdrop-filter:blur(6px);box-shadow:0 3px 12px #0005;cursor:pointer}.district-option input{margin:0;accent-color:#ff9653;width:14px;height:14px}.district-source{position:absolute;bottom:80px;left:14px;z-index:700;background:#13243be8;border:1px solid #355068;padding:4px 7px;border-radius:7px;color:#b6d0df;font-size:10px;max-width:270px;pointer-events:none}
+@media(max-width:790px){.district-options{top:50px;left:7px;gap:6px}.district-option{padding:5px 7px;font-size:10px}.district-tag{font-size:10px;padding:2px 4px}.district-source{bottom:83px;left:8px;max-width:55%;font-size:9px}}.leaflet-popup-content-wrapper{background:#122336;color:#e9f2fb;border-radius:12px;border:1px solid #456179}.leaflet-popup-tip{background:#122336}.leaflet-popup-content{margin:13px 14px}.popup{min-width:210px;max-width:300px}.popup h3{margin:5px 0 8px;font-size:15px;line-height:1.3}.popup p{color:#bdd0e2;font-size:11px;line-height:1.5;margin:6px 0}.popup .pill{border-radius:6px;background:#27455d;padding:3px 7px;color:#e4f0ff;font-size:10px}.popup .locwarn{color:#ffcc94}.popup .source{display:flex;flex-wrap:wrap;gap:8px;margin:11px 0 7px}.popup a{color:#90dafa;text-decoration:none;font-size:11px;font-weight:700}.popup .editbtn{border:1px solid #546b80;background:#244258;color:#e3effb;border-radius:7px;padding:7px 10px;font-size:11px;margin-top:6px}.popup .note{border-top:1px solid #3c5268;padding-top:7px;white-space:pre-wrap;overflow-wrap:anywhere}.leaflet-container a.leaflet-popup-close-button{color:#d8edf7}.leaflet-control-zoom a{background:#1b344c;color:#e2f1fe;border-color:#3b5e78}.leaflet-control-zoom a:hover{background:#274a69;color:white}.leaflet-control-attribution{font-size:9px!important}
+.modal{position:fixed;inset:0;z-index:3000;background:#02060cc9;display:flex;align-items:center;justify-content:center;padding:18px}.modal[hidden]{display:none!important}.dialog{max-height:92dvh;overflow:auto;background:#142337;border:1px solid #4a6378;box-shadow:0 18px 60px #000b;border-radius:16px;width:min(510px,100%);padding:21px}.dialog h2{margin:0 0 5px;font-size:20px}.dialog p{color:#9db5ca;font-size:11px;line-height:1.6;margin:0 0 14px}.input-group{margin-bottom:11px}.input-group label{font-size:11px;color:#bbcee0;display:block;margin-bottom:6px}.input-group input,.input-group select,.input-group textarea{width:100%;border:1px solid #425a73;color:#eaf6ff;background:#0e1c2c;border-radius:9px;padding:10px 11px;font-size:12px;outline:none}.input-group input:focus,.input-group textarea:focus{border-color:var(--aqua)}.input-group textarea{resize:vertical;min-height:65px}.inputrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}.dialog-actions{display:flex;justify-content:flex-end;align-items:center;gap:7px;margin-top:14px;flex-wrap:wrap}.mutebtn{background:none;border:1px solid #60748b;color:#d9eaf7;padding:9px 12px;border-radius:8px;font-size:12px}.dangerbtn{border:1px solid #ae4c54;background:#46222b;color:#ffdbe0;border-radius:8px;padding:9px 11px;font-size:12px;margin-right:auto}.hidden{display:none!important}.notice{position:fixed;left:50%;bottom:25px;transform:translateX(-50%);padding:10px 15px;background:#ebf5fc;color:#182a39;border-radius:9px;z-index:5000;box-shadow:0 8px 30px #0005;font-size:12px;max-width:90vw}.notice[hidden]{display:none}.small{font-size:10px!important}
+@media(max-width:790px){.app{grid-template-columns:1fr;grid-template-rows:53dvh minmax(360px,47dvh);min-height:100dvh}.maparea{grid-row:1}.sidebar{grid-row:2;border-right:0;border-top:1px solid #465976}.brand{padding:13px 16px 9px}.brand h1{font-size:19px;margin:6px 0 3px}.subtitle{font-size:11px}.tagrow{margin-top:6px}.panel{padding:12px 15px}.listwrap{padding:13px 15px}.map-note{bottom:12px;left:8px;font-size:9px;max-width:55%;padding:6px 8px}.legend{right:7px;bottom:13px;max-width:130px;padding:7px 8px}.legend-inner{max-height:88px}.maptop{left:7px;top:7px}.floatbtn{padding:7px 9px;font-size:10px}.stat strong{font-size:19px}}
+</style>
+</head><body>
+<div class="app">
+<aside class="sidebar">
+  <section class="brand"><div class="eyebrow"><span class="logo-dot"></span> KKOSO MARKET INTELLIGENCE</div><h1>파리 패스트캐주얼<br>경쟁 매장 지도</h1><p class="subtitle">브랜드별 입지 분포를 보고, 꼬소의 첫 매장 후보 상권을 조사하기 위한 작업용 지도.</p><div class="tagrow"><span class="tag">v0.1.3 · 작은 핀·20개 구</span><span class="tag">조사 기준 2026.10.27</span><span class="tag">브랜드·매장 필터</span></div></section>
+  <section class="panel"><h2>OVERVIEW</h2><div class="stats"><div class="stat"><strong id="totalCount">0</strong><span>등록된 매장</span></div><div class="stat"><strong id="visibleCount">0</strong><span>현재 표시</span></div><div class="stat"><strong id="brandCount">0</strong><span>표시 브랜드</span></div></div></section>
+  <section class="panel"><h2>SEARCH & FILTER</h2><div class="search"><input id="search" type="search" placeholder="브랜드, 지역, 거리명 검색" autocomplete="off" aria-label="매장 검색"></div><div class="fieldline"><select id="district" aria-label="구 선택"><option value="all">파리 전체 + 근교</option></select><select id="category" aria-label="유형 선택"><option value="all">모든 유형</option></select></div></section>
+  <section class="panel"><div class="row"><h2 style="margin:0">BRANDS</h2><span id="brandSelected" class="small" style="color:var(--muted)"></span></div><div class="brandlist" id="brandList" style="margin-top:12px"></div><div class="brand-actions"><button class="softbtn" id="selectAll">전체 선택</button><button class="softbtn" id="selectNone">전체 해제</button><button class="softbtn" id="onlyFav">★ 즐겨찾기만</button></div></section>
+  <section class="panel"><h2>RESEARCH TOOLS</h2><div class="tools"><button id="addPin" class="mainbtn">＋ 매장 추가</button><button id="placePin" class="softbtn">◎ 지도에서 찍기</button><button id="exportCsv" class="softbtn">CSV 내보내기</button><button id="exportJson" class="softbtn">JSON 백업</button><button id="importJson" class="softbtn">JSON 가져오기</button><button id="resetLocal" class="softbtn">내 수정 초기화</button><input type="file" id="jsonFile" accept=".json,application/json" hidden></div><div class="callout" style="margin-top:12px"><b>위치 확인</b><div id="geoStatus">주소를 기준으로 핀 위치를 보정할 준비 중이에요.</div>작은 점의 점선 테두리는 임시 좌표예요. 정확한 건물 위치는 매장 팝업의 <b>지도에서 확인</b>을 이용해 주세요.</div></section>
+  <section class="listwrap"><div class="listhead"><h2>매장 목록 <span id="listCount" style="color:#90afc5"></span></h2><select id="sortBy" aria-label="정렬"><option value="brand">브랜드순</option><option value="district">구 번호순</option><option value="name">이름순</option></select></div><div id="storeList" class="storelist"></div></section>
+  <div class="footer">OpenStreetMap 기반 지도 및 파리시 공식 구 경계 (외부 서버 필요). 좌표 보정은 공개 지오코딩 서비스 사용. 매장 주소·운영 여부는 변경될 수 있으므로 방문 전 출처를 확인하세요. 추가·수정·즐겨찾기·메모는 현재 브라우저에 저장되며 다른 기기와 자동 동기화되지 않습니다.</div>
+</aside>
+<main class="maparea"><div id="map" role="application" aria-label="파리 경쟁 매장 위치 지도"></div><div class="maptop"><button id="viewAll" class="floatbtn">◉ 전체 매장</button><button id="goBatignolles" class="floatbtn">⌾ 바티뇰</button><button id="goBnF" class="floatbtn">⌾ BnF</button><button id="switchTiles" class="floatbtn" title="배경지도가 안 보이면 다른 지도 서버로 전환">▣ 지도 변경</button></div><div class="district-options" aria-label="구역 표시 설정"><label class="district-option"><input type="checkbox" id="toggleDistrictBorders" checked>구 경계선</label><label class="district-option"><input type="checkbox" id="toggleDistrictNames" checked>구 이름</label></div><div class="district-source" id="districtStatus" role="status">파리 20개 구 경계 확인 중…</div><div class="map-note"><span id="tileStatus">지도 연결 확인 중…</span><br>● 일반 테두리 = 주소 확인 &nbsp; ◌ 점선 = 임시 위치<br>핀을 선택하면 주소와 공식 출처를 볼 수 있어요.</div><div class="legend"><b>브랜드별 색상</b><div id="legendInner" class="legend-inner"></div></div></main>
+</div>
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="dialog"><h2 id="modalTitle">매장 추가</h2><p>지도 핀을 추가하거나 메모를 수정할 수 있어요. 출처 링크는 가능하면 공식 매장 페이지를 넣어주세요.</p><form id="pinForm"><input type="hidden" id="editId"><div class="inputrow"><div class="input-group"><label for="fbrand">브랜드 *</label><input id="fbrand" list="brandOptions" required placeholder="예: Pokawa"><datalist id="brandOptions"></datalist></div><div class="input-group"><label for="fname">매장명 *</label><input id="fname" required placeholder="예: Villiers"></div></div><div class="input-group"><label for="faddress">주소 *</label><input id="faddress" required placeholder="예: 4 Rue de Tocqueville, 75017 Paris"></div><div class="inputrow"><div class="input-group"><label for="fdistrict">구 번호</label><select id="fdistrict"></select></div><div class="input-group"><label for="fcategory">비교 유형</label><select id="fcategory"></select></div></div><div class="input-group"><label for="fsource">출처 링크 (https://)</label><input id="fsource" type="url" placeholder="https://..."></div><div class="input-group"><label for="fnote">조사 메모 (이 브라우저에 저장)</label><textarea id="fnote" rows="3" placeholder="입지, 점심 유동, 가격 등"></textarea></div><div class="inputrow"><div class="input-group"><label for="flat">위도 (선택)</label><input id="flat" type="number" step="any" placeholder="48.87"></div><div class="input-group"><label for="flon">경도 (선택)</label><input id="flon" type="number" step="any" placeholder="2.34"></div></div><div class="dialog-actions"><button type="button" id="deletePin" class="dangerbtn hidden">삭제</button><button type="button" class="mutebtn" id="cancelPin">닫기</button><button type="submit" class="mainbtn">저장</button></div></form></div></div>
+<div id="toast" class="notice" hidden></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+'use strict';
+const INITIAL=[
+  {
+    "id": "s001",
+    "brand": "Pokawa",
+    "name": "Pokawa · Montorgueil",
+    "address": "62 Rue Montorgueil, 75002 Paris, France",
+    "district": 2,
+    "lat": 48.866,
+    "lon": 2.346,
+    "source": "https://pokawa.com/wp-content/uploads/2026/02/2026.02.12-Reglement-et-CG-Jeux-Concours-Saint-Valentin-1.pdf",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s002",
+    "brand": "Pokawa",
+    "name": "Pokawa · Washington",
+    "address": "22 Rue Washington, 75008 Paris, France",
+    "district": 8,
+    "lat": 48.871,
+    "lon": 2.3027,
+    "source": "https://pokawa.com/wp-content/uploads/2026/02/2026.02.12-Reglement-et-CG-Jeux-Concours-Saint-Valentin-1.pdf",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s003",
+    "brand": "Pokawa",
+    "name": "Pokawa · Châteaudun",
+    "address": "31 Rue de Châteaudun, 75009 Paris, France",
+    "district": 9,
+    "lat": 48.8754,
+    "lon": 2.339,
+    "source": "https://pokawa.com/wp-content/uploads/2026/02/2026.02.12-Reglement-et-CG-Jeux-Concours-Saint-Valentin-1.pdf",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s004",
+    "brand": "Pokawa",
+    "name": "Pokawa · Oberkampf",
+    "address": "56 bis Rue Oberkampf, 75011 Paris, France",
+    "district": 11,
+    "lat": 48.8648,
+    "lon": 2.3769,
+    "source": "https://pokawa.com/wp-content/uploads/2026/02/2026.02.12-Reglement-et-CG-Jeux-Concours-Saint-Valentin-1.pdf",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s005",
+    "brand": "Pokawa",
+    "name": "Pokawa · BnF",
+    "address": "101 Avenue de France, 75013 Paris, France",
+    "district": 13,
+    "lat": 48.8321,
+    "lon": 2.3768,
+    "source": "https://pokawa.com/wp-content/uploads/2026/02/2026.02.12-Reglement-et-CG-Jeux-Concours-Saint-Valentin-1.pdf",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s006",
+    "brand": "Pokawa",
+    "name": "Pokawa · Gaîté",
+    "address": "1 Rue du Commandant René Mouchotte, 75014 Paris, France",
+    "district": 14,
+    "lat": 48.8391,
+    "lon": 2.3223,
+    "source": "https://pokawa.com/wp-content/uploads/2026/02/2026.02.12-Reglement-et-CG-Jeux-Concours-Saint-Valentin-1.pdf",
+    "category": "볼·조립형",
+    "remark": "쇼핑센터 내 점포",
+    "geo": "approx"
+  },
+  {
+    "id": "s007",
+    "brand": "Pokawa",
+    "name": "Pokawa · Commerce",
+    "address": "97 Rue des Entrepreneurs, 75015 Paris, France",
+    "district": 15,
+    "lat": 48.8448,
+    "lon": 2.291,
+    "source": "https://pokawa.com/wp-content/uploads/2026/02/2026.02.12-Reglement-et-CG-Jeux-Concours-Saint-Valentin-1.pdf",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s008",
+    "brand": "Pokawa",
+    "name": "Pokawa · Mozart",
+    "address": "24 Avenue Mozart, 75016 Paris, France",
+    "district": 16,
+    "lat": 48.855,
+    "lon": 2.2688,
+    "source": "https://pokawa.com/wp-content/uploads/2026/02/2026.02.12-Reglement-et-CG-Jeux-Concours-Saint-Valentin-1.pdf",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s009",
+    "brand": "Pokawa",
+    "name": "Pokawa · Villiers",
+    "address": "4 Rue de Tocqueville, 75017 Paris, France",
+    "district": 17,
+    "lat": 48.8819,
+    "lon": 2.3144,
+    "source": "https://pokawa.com/wp-content/uploads/2026/02/2026.02.12-Reglement-et-CG-Jeux-Concours-Saint-Valentin-1.pdf",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s010",
+    "brand": "Pokawa",
+    "name": "Pokawa · Porte des Lilas",
+    "address": "13 Avenue de la Porte des Lilas, 75019 Paris, France",
+    "district": 19,
+    "lat": 48.8773,
+    "lon": 2.4055,
+    "source": "https://www.google.com/maps/search/?api=1&query=Pokawa+Porte+des+Lilas",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s011",
+    "brand": "Pierre Sang Express",
+    "name": "Pierre Sang Express · Oberkampf",
+    "address": "25 Rue Oberkampf, 75011 Paris, France",
+    "district": 11,
+    "lat": 48.8635,
+    "lon": 2.3714,
+    "source": "https://pierresang.com/pierre-sang-express/",
+    "category": "한식·비빔밥",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s012",
+    "brand": "Pierre Sang Express",
+    "name": "Pierre Sang Express · Réaumur",
+    "address": "108 Rue Réaumur, 75002 Paris, France",
+    "district": 2,
+    "lat": 48.868,
+    "lon": 2.3446,
+    "source": "https://pierresang.com/pierre-sang-express/",
+    "category": "한식·비빔밥",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s013",
+    "brand": "Pierre Sang Express",
+    "name": "Pierre Sang Express · Notre-Dame-des-Champs",
+    "address": "12 Rue Notre-Dame des Champs, 75006 Paris, France",
+    "district": 6,
+    "lat": 48.8442,
+    "lon": 2.3318,
+    "source": "https://pierresang.com/pierre-sang-express/",
+    "category": "한식·비빔밥",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s014",
+    "brand": "Jour",
+    "name": "Jour · Batignolles",
+    "address": "32 Rue Mstislav Rostropovitch, 75017 Paris, France",
+    "district": 17,
+    "lat": 48.8931,
+    "lon": 2.3171,
+    "source": "https://jour.fr/restaurants/",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s015",
+    "brand": "Jour",
+    "name": "Jour · Phalsbourg",
+    "address": "3 Rue de Phalsbourg, 75017 Paris, France",
+    "district": 17,
+    "lat": 48.8818,
+    "lon": 2.3154,
+    "source": "https://jour.fr/restaurants/",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s016",
+    "brand": "Jour",
+    "name": "Jour · Boétie",
+    "address": "59 Rue de la Boétie, 75008 Paris, France",
+    "district": 8,
+    "lat": 48.872,
+    "lon": 2.31,
+    "source": "https://jour.fr/restaurants/",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s017",
+    "brand": "Jour",
+    "name": "Jour · Capucines",
+    "address": "22 Rue des Capucines, 75002 Paris, France",
+    "district": 2,
+    "lat": 48.8689,
+    "lon": 2.3282,
+    "source": "https://jour.fr/restaurants/",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s018",
+    "brand": "Jour",
+    "name": "Jour · Haussmann",
+    "address": "135 Boulevard Haussmann, 75008 Paris, France",
+    "district": 8,
+    "lat": 48.8745,
+    "lon": 2.311,
+    "source": "https://jour.fr/restaurants/",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s019",
+    "brand": "Jour",
+    "name": "Jour · Kléber",
+    "address": "40 Avenue Kléber, 75016 Paris, France",
+    "district": 16,
+    "lat": 48.8701,
+    "lon": 2.2917,
+    "source": "https://jour.fr/restaurants/",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s020",
+    "brand": "Jour",
+    "name": "Jour · Malesherbes",
+    "address": "13 Boulevard Malesherbes, 75008 Paris, France",
+    "district": 8,
+    "lat": 48.8705,
+    "lon": 2.3221,
+    "source": "https://jour.fr/restaurants/",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s021",
+    "brand": "Jour",
+    "name": "Jour · Richelieu",
+    "address": "68 Rue de Richelieu, 75002 Paris, France",
+    "district": 2,
+    "lat": 48.8664,
+    "lon": 2.3369,
+    "source": "https://jour.fr/restaurants/",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s022",
+    "brand": "Jour",
+    "name": "Jour · Londres",
+    "address": "46 Rue de Londres, 75008 Paris, France",
+    "district": 8,
+    "lat": 48.8787,
+    "lon": 2.3255,
+    "source": "https://jour.fr/restaurants/",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s023",
+    "brand": "Jour",
+    "name": "Jour · Saint-Honoré",
+    "address": "238 Rue du Faubourg Saint-Honoré, 75008 Paris, France",
+    "district": 8,
+    "lat": 48.8751,
+    "lon": 2.308,
+    "source": "https://jour.fr/restaurants/",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s024",
+    "brand": "Pitaya",
+    "name": "Pitaya · Place de Clichy",
+    "address": "88 Rue de Clichy, 75009 Paris, France",
+    "district": 9,
+    "lat": 48.8848,
+    "lon": 2.3255,
+    "source": "https://www.pitaya-thaistreetfood.com/",
+    "category": "웍·아시아",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s025",
+    "brand": "Pitaya",
+    "name": "Pitaya · Quartier Latin",
+    "address": "5 Rue de la Harpe, 75005 Paris, France",
+    "district": 5,
+    "lat": 48.8527,
+    "lon": 2.3457,
+    "source": "https://www.pitaya-thaistreetfood.com/",
+    "category": "웍·아시아",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s026",
+    "brand": "Pitaya",
+    "name": "Pitaya · Louvre",
+    "address": "99 Rue de Rivoli, 75001 Paris, France",
+    "district": 1,
+    "lat": 48.861,
+    "lon": 2.3342,
+    "source": "https://www.pitaya-thaistreetfood.com/",
+    "category": "웍·아시아",
+    "remark": "쇼핑센터 푸드코트: 운영상태 현장 확인",
+    "geo": "approx"
+  },
+  {
+    "id": "s027",
+    "brand": "Mister Garden",
+    "name": "Mister Garden · Châteaudun",
+    "address": "39 Rue de Châteaudun, 75009 Paris, France",
+    "district": 9,
+    "lat": 48.8761,
+    "lon": 2.3357,
+    "source": "https://restaurants.mister-garden.com/",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s028",
+    "brand": "Mister Garden",
+    "name": "Mister Garden · Montmartre",
+    "address": "155 Rue Montmartre, 75002 Paris, France",
+    "district": 2,
+    "lat": 48.8683,
+    "lon": 2.3439,
+    "source": "https://restaurants.mister-garden.com/",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s029",
+    "brand": "Mister Garden",
+    "name": "Mister Garden · Choiseul",
+    "address": "66 Rue Sainte-Anne, 75002 Paris, France",
+    "district": 2,
+    "lat": 48.8685,
+    "lon": 2.3356,
+    "source": "https://restaurants.mister-garden.com/",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s030",
+    "brand": "Mister Garden",
+    "name": "Mister Garden · Casanova",
+    "address": "8 Rue Danielle Casanova, 75002 Paris, France",
+    "district": 2,
+    "lat": 48.8696,
+    "lon": 2.3297,
+    "source": "https://restaurants.mister-garden.com/",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s031",
+    "brand": "Mister Garden",
+    "name": "Mister Garden · Rivière",
+    "address": "4 Rue du Commandant Rivière, 75008 Paris, France",
+    "district": 8,
+    "lat": 48.8716,
+    "lon": 2.3108,
+    "source": "https://restaurants.mister-garden.com/",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s032",
+    "brand": "MOÖ",
+    "name": "MOÖ · Quatre-Septembre",
+    "address": "24 Rue du Quatre Septembre, 75002 Paris, France",
+    "district": 2,
+    "lat": 48.8694,
+    "lon": 2.3388,
+    "source": "https://moo.eatbu.com/?lang=fr",
+    "category": "한식·비빔밥",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s033",
+    "brand": "Dubble",
+    "name": "Dubble · Malesherbes",
+    "address": "72 Boulevard Malesherbes, 75008 Paris, France",
+    "district": 8,
+    "lat": 48.8783,
+    "lon": 2.3153,
+    "source": "https://www.dubble-food.com/restaurants/paris-malesherbes",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s034",
+    "brand": "Cojean",
+    "name": "Cojean · Mendès France",
+    "address": "31 Avenue Pierre Mendès France, 75013 Paris, France",
+    "district": 13,
+    "lat": 48.8397,
+    "lon": 2.371,
+    "source": "https://www.cojean.fr/restaurants/paris/cojean-mendes-france/",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s035",
+    "brand": "Cojean",
+    "name": "Cojean · Rue du Bac",
+    "address": "28 Rue du Bac, 75007 Paris, France",
+    "district": 7,
+    "lat": 48.8566,
+    "lon": 2.327,
+    "source": "https://www.cojean.fr/",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s036",
+    "brand": "Fresh Burritos",
+    "name": "Fresh Burritos · Saint-Lazare",
+    "address": "123 Rue Saint-Lazare, 75008 Paris, France",
+    "district": 8,
+    "lat": 48.8756,
+    "lon": 2.3256,
+    "source": "https://www.freshburritos.fr/",
+    "category": "멕시칸·조립형",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s037",
+    "brand": "Street Bangkok",
+    "name": "Street Bangkok · Étienne Marcel",
+    "address": "112 Rue Saint-Denis, 75002 Paris, France",
+    "district": 2,
+    "lat": 48.8645,
+    "lon": 2.3494,
+    "source": "https://www.streetbangkok.fr/restaurants",
+    "category": "웍·아시아",
+    "remark": "일부 서비스에서 임시 휴무 표시: 방문 전 확인",
+    "geo": "approx"
+  },
+  {
+    "id": "s038",
+    "brand": "Bolkiri",
+    "name": "Bolkiri · République",
+    "address": "22 Avenue de la République, 75011 Paris, France",
+    "district": 11,
+    "lat": 48.8655,
+    "lon": 2.3653,
+    "source": "https://restaurants.bolkiri.fr/street-food-vietnamienne/paris-11-republique/",
+    "category": "웍·아시아",
+    "remark": "",
+    "geo": "approx"
+  },
+  {
+    "id": "s039",
+    "brand": "Chikin Bang",
+    "name": "Chikin Bang · La Défense",
+    "address": "15 Parvis de la Défense, 92800 Puteaux, France",
+    "district": "근교",
+    "lat": 48.8918,
+    "lon": 2.2363,
+    "source": "https://www.chikinbang.com/restaurant/centre-commercial-westfield-la-defense",
+    "category": "한식·스트리트푸드",
+    "remark": "Westfield Les 4 Temps 3층",
+    "geo": "approx"
+  },
+  {
+    "id": "s040",
+    "brand": "Jour",
+    "name": "Jour · La Défense",
+    "address": "2 Passage de l’Arche, 92800 Puteaux, France",
+    "district": "근교",
+    "lat": 48.8941,
+    "lon": 2.239,
+    "source": "https://jour.fr/restaurants/",
+    "category": "볼·조립형",
+    "remark": "",
+    "geo": "approx"
+  }
+];
+const BRAND_COLORS={'Pokawa':'#59d5de','Pitaya':'#ff756a','Jour':'#9de2aa','Pierre Sang Express':'#ffb460','Mister Garden':'#c5d774','MOÖ':'#f8ce74','Dubble':'#a28eff','Cojean':'#90b6e8','Fresh Burritos':'#f2a46d','Street Bangkok':'#d876e5','Bolkiri':'#65e3b2','Chikin Bang':'#ff8eb5'};
+const CATEGORIES=[...new Set(INITIAL.map(x=>x.category))];const LSKEY='kkoso_market_map_v01';const GEO_KEY='kkoso_market_geo_cache_v01';
+const $=(id)=>document.getElementById(id);
+let userData={patch:{},add:[],deleted:[],fav:[]},geoCache={},selectedBrands=new Set(Object.keys(BRAND_COLORS)),favOnly=false,placing=false,markers=new Map(),visible=[],loadingGeo=false,toastTimer;
+function loadJSON(key,fallback){try{return JSON.parse(localStorage.getItem(key))||fallback}catch(_){return fallback}}
+userData=Object.assign(userData,loadJSON(LSKEY,{}));geoCache=loadJSON(GEO_KEY,{});
+if(!Array.isArray(userData.add))userData.add=[];if(!Array.isArray(userData.deleted))userData.deleted=[];if(!Array.isArray(userData.fav))userData.fav=[];if(!userData.patch||typeof userData.patch!=='object')userData.patch={};
+const save=()=>{try{localStorage.setItem(LSKEY,JSON.stringify(userData))}catch(_){notify('브라우저 저장에 실패했어요. JSON 백업을 권장합니다.')}};
+const saveGeo=()=>{try{localStorage.setItem(GEO_KEY,JSON.stringify(geoCache))}catch(_){}};
+function allStores(){return [...INITIAL.filter(x=>!userData.deleted.includes(x.id)).map(x=>({...x,...(userData.patch[x.id]||{})})),...userData.add].map(x=>{const g=geoCache[x.address];return x.geo==='manual'?x:(g?{...x,lat:g.lat,lon:g.lon,geo:'geocoded'}:x)})}
+function normalize(s){return String(s||'').toLocaleLowerCase('fr').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9가-힣]+/g,' ').trim()}
+function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
+function safeHttp(s){try{const u=new URL(String(s));return /^(https?:)$/.test(u.protocol)?u.href:''}catch(_){return''}}
+function gmURL(s){return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(s)}
+function brandColor(b){if(BRAND_COLORS[b])return BRAND_COLORS[b];let n=0;for(const ch of b)n=(n*31+ch.charCodeAt(0))>>>0;return `hsl(${n%360} 68% 64%)`}
+function notify(msg){const e=$('toast');e.textContent=msg;e.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>e.hidden=true,3500)}
+if(typeof L==='undefined'){$('geoStatus').textContent='지도 라이브러리를 불러오지 못했어요. 인터넷 연결을 확인해 주세요.';throw Error('Leaflet not loaded')}
+const map=L.map('map',{zoomControl:false,preferCanvas:true,closePopupOnClick:true}).setView([48.8644,2.3376],12);
+L.control.zoom({position:'topright'}).addTo(map);
+// Stable raster-map mode; no vector engine, WebGL, CARTO or API key.
+// If the mobile file viewer blocks a tile host, switch providers without affecting store rendering.
+const TILE_SOURCES=[
+  {name:'OpenStreetMap France',url:'https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png',subdomains:'abc',attribution:'&copy; OpenStreetMap France &amp; OpenStreetMap contributors'},
+  {name:'OpenStreetMap',url:'https://tile.openstreetmap.org/{z}/{x}/{y}.png',attribution:'&copy; OpenStreetMap contributors'},
+  {name:'Esri World Street Map',url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',attribution:'Tiles &copy; Esri'}
+];
+let activeTile=null,tileIndex=0,tileChecked=false,tileFailures=0,tileSuccess=0;
+function switchTile(i){
+  tileIndex=i%TILE_SOURCES.length;const s=TILE_SOURCES[tileIndex];
+  if(activeTile)map.removeLayer(activeTile);
+  tileFailures=0;tileSuccess=0;tileChecked=false;
+  $('tileStatus').textContent=s.name+' 지도 불러오는 중…';
+  const params={attribution:s.attribution,maxZoom:19,keepBuffer:2,updateWhenIdle:true,errorTileUrl:''};
+  if(s.subdomains)params.subdomains=s.subdomains;
+  activeTile=L.tileLayer(s.url,params).addTo(map);
+  activeTile.on('tileload',()=>{tileSuccess++;$('tileStatus').textContent=s.name+' · API 키 불필요';});
+  activeTile.on('tileerror',()=>{
+    tileFailures++;
+    if(!tileChecked && tileFailures>=4 && tileSuccess===0){
+      tileChecked=true;
+      if(tileIndex<TILE_SOURCES.length-1)setTimeout(()=>switchTile(tileIndex+1),400);
+      else $('tileStatus').textContent='지도 배경 서버 연결 실패 · GitHub Pages에서 열어보세요 (매장 핀·목록은 사용 가능)';
+    }
+  });
+  const sourceIndex=tileIndex;
+  setTimeout(()=>{
+    if(sourceIndex===tileIndex && tileSuccess===0 && !tileChecked){tileChecked=true;
+      if(tileIndex<TILE_SOURCES.length-1)switchTile(tileIndex+1);
+      else $('tileStatus').textContent='지도 배경 연결 실패 · GitHub Pages에서 열어보세요';
+    }
+  },7500);
+}
+switchTile(0);
+$('switchTiles').onclick=()=>{switchTile(tileIndex+1);map.invalidateSize()};
+// Paris city's official 20-arrondissement boundary dataset. Labels have safe fallback centers.
+const DISTRICT_CENTER_POINTS=[[1, 48.8604, 2.3415], [2, 48.8677, 2.3413], [3, 48.8636, 2.3613], [4, 48.8543, 2.3577], [5, 48.8442, 2.3508], [6, 48.8499, 2.3336], [7, 48.8563, 2.3123], [8, 48.8737, 2.3111], [9, 48.877, 2.3378], [10, 48.8763, 2.359], [11, 48.8595, 2.378], [12, 48.8397, 2.387], [13, 48.829, 2.362], [14, 48.833, 2.327], [15, 48.842, 2.299], [16, 48.862, 2.277], [17, 48.887, 2.313], [18, 48.893, 2.348], [19, 48.882, 2.384], [20, 48.864, 2.401]];
+const districtBorderGroup=L.layerGroup().addTo(map);
+const districtNameGroup=L.layerGroup().addTo(map);
+map.createPane('districtBoundaryPane');map.getPane('districtBoundaryPane').style.zIndex='345';map.getPane('districtBoundaryPane').style.pointerEvents='none';
+map.createPane('districtNamePane');map.getPane('districtNamePane').style.zIndex='450';map.getPane('districtNamePane').style.pointerEvents='none';
+let districtBordersLoaded=false;
+for(const [num,lat,lng] of DISTRICT_CENTER_POINTS){
+  const tag=L.divIcon({className:'district-tag-wrap',html:`<div class="district-tag">${num}구</div>`,iconSize:[39,22],iconAnchor:[19,11]});
+  L.marker([lat,lng],{icon:tag,pane:'districtNamePane',interactive:false,keyboard:false,zIndexOffset:-1000}).addTo(districtNameGroup);
+}
+function applyDistrictVisibility(){
+  const showBorders=$('toggleDistrictBorders').checked;
+  const showNames=$('toggleDistrictNames').checked;
+  if(showBorders&&!map.hasLayer(districtBorderGroup))districtBorderGroup.addTo(map);
+  if(!showBorders&&map.hasLayer(districtBorderGroup))map.removeLayer(districtBorderGroup);
+  if(showNames&&!map.hasLayer(districtNameGroup))districtNameGroup.addTo(map);
+  if(!showNames&&map.hasLayer(districtNameGroup))map.removeLayer(districtNameGroup);
+}
+$('toggleDistrictBorders').addEventListener('change',applyDistrictVisibility);
+$('toggleDistrictNames').addEventListener('change',applyDistrictVisibility);
+// City of Paris Open Data, public boundaries (ODbL). No invented borders.
+const BORDER_URLS=[
+  'https://opendata.paris.fr/api/explore/v2.1/catalog/datasets/arrondissements/exports/geojson',
+  'https://capgeo2.paris.fr/opendata/rest/services/DU/DU_Arrondissement/MapServer/0/query?where=1%3D1&outFields=*&returnGeometry=true&outSR=4326&f=geojson'
+];
+async function loadOfficialDistricts(){
+ let failure='';
+ for(const u of BORDER_URLS){
+  try{
+   const res=await fetch(u,{mode:'cors',cache:'force-cache'});
+   if(!res.ok)throw Error('HTTP '+res.status);
+   const data=await res.json();
+   if(!Array.isArray(data.features)||data.features.length<20)throw Error('20개 구 데이터가 완전하지 않음');
+   districtBorderGroup.clearLayers();
+   L.geoJSON(data,{pane:'districtBoundaryPane',interactive:false,style:{color:'#8ab3cd',weight:1.35,opacity:.8,fill:false,fillOpacity:0,smoothFactor:.7}}).addTo(districtBorderGroup);
+   districtBordersLoaded=true;
+   $('districtStatus').textContent='파리시 공식 20개 구 경계 · 표시 중';
+   applyDistrictVisibility();
+   return;
+  }catch(e){failure=String(e.message||e)}
+ }
+ $('districtStatus').textContent='구 이름 표시 중 · 경계 서버 연결 실패 (GitHub Pages에서 재시도)';
+ console.warn('Official district GeoJSON was not available:',failure);
+}
+loadOfficialDistricts();
+
+const layer=L.layerGroup().addTo(map); // No cluster: every store remains a separate tiny dot.
+function pinIcon(s){const c=brandColor(s.brand);return L.divIcon({className:'',html:`<div class="pin-hit" title="${escapeHtml(s.name)}"><span class="pin-dot ${s.geo==='approx'?'approx':''}" style="background:${escapeHtml(c)}"></span></div>`,iconSize:[22,22],iconAnchor:[11,11],popupAnchor:[0,-7]})}
+function buildPopup(s){const source=safeHttp(s.source);const note=s.note||s.remark||'';return `<div class="popup"><span class="pill">${escapeHtml(s.brand)}</span><h3>${escapeHtml(s.name)}</h3><p>${escapeHtml(s.address)}</p><p>${escapeHtml(s.category)} · ${escapeHtml(s.district)}${s.district==='근교'?'':'구'}</p>${s.geo!=='geocoded'?'<p class="locwarn">⚠ 핀은 임시 위치입니다. 주소 링크로 정확한 위치를 확인하세요.</p>':''}${note?`<p class="note">${escapeHtml(note)}</p>`:''}<div class="source"><a href="${gmURL(s.address)}" target="_blank" rel="noopener noreferrer">Google 지도에서 확인 ↗</a>${source?`<a href="${escapeHtml(source)}" target="_blank" rel="noopener noreferrer">공식·참고 출처 ↗</a>`:''}</div><button class="editbtn" data-edit="${escapeHtml(s.id)}">메모·매장 수정</button></div>`}
+function updateFilters(){const all=allStores();let bs=[...new Set(all.map(s=>s.brand))].sort((a,b)=>a.localeCompare(b,'ko'));$('brandSelected').textContent=`${bs.filter(b=>selectedBrands.has(b)).length}/${bs.length} 선택`;
+  $('brandList').innerHTML=bs.map(b=>{const n=all.filter(x=>x.brand===b).length;return `<button type="button" class="brand-chip ${selectedBrands.has(b)?'active':''}" data-brand="${escapeHtml(b)}" aria-pressed="${selectedBrands.has(b)}"><i class="b-dot" style="background:${escapeHtml(brandColor(b))}"></i>${escapeHtml(b)} <small>${n}</small></button>`}).join('');
+  $('legendInner').innerHTML=bs.filter(b=>selectedBrands.has(b)).map(b=>`<div class="legend-item"><span class="legend-swatch" style="background:${escapeHtml(brandColor(b))}"></span>${escapeHtml(b)}</div>`).join('')||'<span class="small">선택 없음</span>';
+  $('brandOptions').innerHTML=bs.map(b=>`<option value="${escapeHtml(b)}"></option>`).join('')}
+function resetOptions(){const ds=[...new Set(allStores().map(s=>s.district))].sort((a,b)=>a==='근교'?1:b==='근교'?-1:Number(a)-Number(b));const old=$('district').value;$('district').innerHTML='<option value="all">파리 전체 + 근교</option>'+ds.map(d=>`<option value="${escapeHtml(d)}">${escapeHtml(d==='근교'?'파리 근교':d+'구')}</option>`).join('');if(ds.map(String).includes(old))$('district').value=old;
+ const cats=[...new Set(allStores().map(s=>s.category))].sort();const c=$('category').value;$('category').innerHTML='<option value="all">모든 유형</option>'+cats.map(x=>`<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`).join('');if(cats.includes(c))$('category').value=c;
+ const prevCategory=$('fcategory').value,prevDistrict=$('fdistrict').value;$('fcategory').innerHTML=CATEGORIES.map(x=>`<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`).join('');if(CATEGORIES.includes(prevCategory))$('fcategory').value=prevCategory;$('fdistrict').innerHTML=Array.from({length:20},(_,i)=>`<option value="${i+1}">${i+1}구</option>`).join('')+'<option value="근교">파리 근교</option>';if([...Array.from({length:20},(_,i)=>String(i+1)),'근교'].includes(prevDistrict))$('fdistrict').value=prevDistrict}
+function filterStores(){const q=normalize($('search').value),d=$('district').value,c=$('category').value;const all=allStores();visible=all.filter(s=>selectedBrands.has(s.brand)&&(!favOnly||userData.fav.includes(s.id))&&(d==='all'||String(s.district)===d)&&(c==='all'||s.category===c)&&(!q||normalize([s.name,s.brand,s.address,s.district,s.category,s.note,s.remark].join(' ')).includes(q)));
+ const sort=$('sortBy').value;visible.sort((a,b)=>sort==='district'?(Number(a.district)||99)-(Number(b.district)||99)||a.name.localeCompare(b.name):sort==='name'?a.name.localeCompare(b.name):a.brand.localeCompare(b.brand)||a.name.localeCompare(b.name));}
+function render(){resetOptions();updateFilters();filterStores();$('totalCount').textContent=allStores().length;$('visibleCount').textContent=visible.length;$('brandCount').textContent=new Set(visible.map(x=>x.brand)).size;$('listCount').textContent=`(${visible.length})`;
+ layer.clearLayers();markers.clear();for(const s of visible){if(!Number.isFinite(Number(s.lat))||!Number.isFinite(Number(s.lon)))continue;const m=L.marker([Number(s.lat),Number(s.lon)],{icon:pinIcon(s),title:s.name});m.bindPopup(()=>buildPopup(s),{maxWidth:330});layer.addLayer(m);markers.set(s.id,m)}
+ $('storeList').innerHTML=visible.length?visible.map(s=>`<div class="store-card" tabindex="0" role="button" data-goto="${escapeHtml(s.id)}"><div class="store-card-top"><div class="store-title"><span class="brand-icon" style="background:${escapeHtml(brandColor(s.brand))}"></span><strong>${escapeHtml(s.name)}</strong></div><button type="button" class="favbtn ${userData.fav.includes(s.id)?'on':''}" data-fav="${escapeHtml(s.id)}" aria-label="즐겨찾기 ${escapeHtml(s.name)}">${userData.fav.includes(s.id)?'★':'☆'}</button></div><div class="store-address">${escapeHtml(s.address)}</div><div class="store-tags"><span>${escapeHtml(s.district)}${s.district==='근교'?'':'구'}</span><span>${escapeHtml(s.category)}</span><span>${s.geo==='geocoded'?'● 좌표 보정':'◌ 좌표 임시'}</span></div></div>`).join(''):'<div class="empty">검색 결과가 없어. 필터를 조정해봐.</div>'}
+function focusStore(id){const m=markers.get(id);if(!m){notify('현재 필터에서 보이지 않는 매장이에요.');return}const p=m.getLatLng();map.flyTo(p,Math.max(map.getZoom(),16),{duration:.75});setTimeout(()=>{m.openPopup()},800)}
+function fitAll(){const bounds=L.latLngBounds(visible.filter(x=>Number.isFinite(Number(x.lat))&&Number.isFinite(Number(x.lon))).map(x=>[Number(x.lat),Number(x.lon)]));if(bounds.isValid())map.fitBounds(bounds.pad(.12),{maxZoom:14,animate:true})}
+$('storeList').addEventListener('click',e=>{const f=e.target.closest('[data-fav]');if(f){e.stopPropagation();toggleFav(f.dataset.fav);return}const x=e.target.closest('[data-goto]');if(x)focusStore(x.dataset.goto)});
+$('storeList').addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('.store-card')){e.preventDefault();focusStore(e.target.dataset.goto)}});
+function toggleFav(id){const f=userData.fav;userData.fav=f.includes(id)?f.filter(x=>x!==id):[...f,id];save();render()}
+$('map').addEventListener('click',e=>{const btn=e.target.closest('[data-edit]');if(btn){e.preventDefault();e.stopPropagation();openModal(btn.dataset.edit)}});
+$('brandList').addEventListener('click',e=>{const btn=e.target.closest('[data-brand]');if(!btn)return;const b=btn.dataset.brand;selectedBrands.has(b)?selectedBrands.delete(b):selectedBrands.add(b);render()});
+$('selectAll').onclick=()=>{allStores().forEach(s=>selectedBrands.add(s.brand));render()};$('selectNone').onclick=()=>{selectedBrands.clear();render()};
+$('onlyFav').onclick=()=>{favOnly=!favOnly;$('onlyFav').style.background=favOnly?'#66471e':'';$('onlyFav').textContent=favOnly?'★ 즐겨찾기 표시중':'★ 즐겨찾기만';render()};
+['search','district','category','sortBy'].forEach(x=>$(x).addEventListener(x==='search'?'input':'change',render));
+$('viewAll').onclick=()=>{if(!visible.length){notify('선택된 매장이 없어.');return}fitAll()};$('goBatignolles').onclick=()=>map.flyTo([48.8878,2.3195],15);$('goBnF').onclick=()=>map.flyTo([48.8334,2.3770],15);
+function openModal(id='',coord=null){const s=allStores().find(x=>x.id===id);$('pinForm').reset();$('editId').value=s?.id||'';$('modalTitle').textContent=s?'매장 정보·메모 수정':'매장 추가';$('deletePin').classList.toggle('hidden',!s);$('fbrand').value=s?.brand||'';$('fname').value=s?.name?.replace(new RegExp('^'+(s?.brand||'')+'\\s*·\\s*'),'')||'';$('faddress').value=s?.address||'';$('fdistrict').value=String(s?.district||17);$('fcategory').value=s?.category||CATEGORIES[0];$('fsource').value=s?.source||'';$('fnote').value=s?.note||s?.remark||'';$('flat').value=coord?.lat??s?.lat??'';$('flon').value=coord?.lng??s?.lon??'';$('modal').hidden=false;$('fbrand').focus()}
+function closeModal(){$('modal').hidden=true}
+$('addPin').onclick=()=>openModal();$('cancelPin').onclick=closeModal;$('modal').addEventListener('click',e=>{if(e.target===$('modal'))closeModal()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+$('placePin').onclick=()=>{placing=!placing;$('placePin').textContent=placing?'✕ 핀 찍기 취소':'◎ 지도에서 찍기';$('placePin').style.background=placing?'#8d572f':'';notify(placing?'지도에서 원하는 위치를 눌러줘.':'핀 찍기를 취소했어.')};
+map.on('click',e=>{if(!placing)return;placing=false;$('placePin').textContent='◎ 지도에서 찍기';$('placePin').style.background='';openModal('',e.latlng)});
+$('pinForm').addEventListener('submit',e=>{e.preventDefault();const brand=$('fbrand').value.trim(),sub=$('fname').value.trim(),address=$('faddress').value.trim();if(!brand||!sub||!address)return notify('브랜드, 매장명, 주소가 필요해.');const oldId=$('editId').value;const old=allStores().find(x=>x.id===oldId);let lat=Number($('flat').value),lon=Number($('flon').value);const valid= $('flat').value!==''&&$('flon').value!==''&&lat>=48.0&&lat<=49.5&&lon>=1.7&&lon<=3.1;
+ const o={id:oldId||'u'+Date.now(),brand,name:brand+' · '+sub,address,district:$('fdistrict').value==='근교'?'근교':Number($('fdistrict').value),category:$('fcategory').value,source:$('fsource').value.trim(),note:$('fnote').value.trim(),lat:valid?lat:48.866,lon:valid?lon:2.35,geo:valid?'manual':'approx',remark:''};
+ if(old){if(INITIAL.some(x=>x.id===oldId))userData.patch[oldId]=o;else userData.add=userData.add.map(x=>x.id===oldId?o:x)}else{userData.add.push(o);selectedBrands.add(brand)};if(old?.address!==address)delete geoCache[old?.address];save();closeModal();render();notify('매장 정보를 저장했어.');if(!valid)geocodeOne(o).then(()=>render()).catch(()=>{});else focusStore(o.id)});
+$('deletePin').onclick=()=>{const id=$('editId').value;const s=allStores().find(x=>x.id===id);if(!s||!confirm(`${s.name} 매장을 지도에서 제외할까요?`))return;if(INITIAL.some(x=>x.id===id)){userData.deleted.push(id);delete userData.patch[id]}else userData.add=userData.add.filter(x=>x.id!==id);save();closeModal();render();notify('목록에서 제외했어.')};
+function download(name,body,type){const blob=new Blob([body],{type});const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)}
+function csvCell(s){return '"'+String(s??'').replaceAll('"','""')+'"'}
+$('exportCsv').onclick=()=>{const cols=['brand','name','address','district','category','remark','note','source','lat','lon','geo'];const text='\ufeff'+cols.join(',')+'\r\n'+allStores().map(s=>cols.map(k=>csvCell(s[k])).join(',')).join('\r\n');download('kkoso_competitor_stores.csv',text,'text/csv;charset=utf-8');notify('전체 매장 CSV 저장 완료')};
+$('exportJson').onclick=()=>{download('kkoso_competitor_map_backup.json',JSON.stringify({version:1,created:new Date().toISOString(),stores:allStores(),favorites:userData.fav},null,2),'application/json');notify('전체 매장 JSON 백업 완료')};
+$('importJson').onclick=()=>$('jsonFile').click();$('jsonFile').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{const j=JSON.parse(await file.text());if(!Array.isArray(j.stores))throw Error('stores 배열이 없어요');if(!confirm('가져온 JSON의 매장 정보를 현재 지도에 병합할까요? 기존 수정 정보는 덮어쓸 수 있습니다.'))return;const initialIDs=new Set(INITIAL.map(x=>x.id));for(const [i,s] of j.stores.entries()){if(!s||!s.name||!s.address||!s.brand)continue;const obj={...s,id:s.id||`u_import_${i}_${Date.now()}`};if(initialIDs.has(obj.id))userData.patch[obj.id]=obj;else{const n=userData.add.findIndex(x=>x.id===obj.id);if(n<0)userData.add.push(obj);else userData.add[n]=obj}selectedBrands.add(obj.brand)}if(Array.isArray(j.favorites))userData.fav=[...new Set([...userData.fav,...j.favorites])];save();render();notify('JSON 매장 정보를 가져왔어.')}catch(ex){notify('파일을 읽지 못했어: '+ex.message)}finally{e.target.value=''}});
+$('resetLocal').onclick=()=>{if(!confirm('이 브라우저에 저장한 새 매장·수정·메모·즐겨찾기를 모두 초기화할까요?'))return;userData={patch:{},add:[],deleted:[],fav:[]};save();selectedBrands=new Set(Object.keys(BRAND_COLORS));favOnly=false;render();notify('초기화 완료')};
+function geocodeScore(p,address){const a=normalize(address),road=normalize(p.street||p.name||''),h=String(p.housenumber||''),pc=String(p.postcode||'');let score=0;if(road.length>4&&a.includes(road))score+=5;const stWords=road.split(' ').filter(w=>w.length>4);if(stWords.length&&stWords.some(w=>a.includes(w)))score+=2;if(h&&a.startsWith(h+' '))score+=4;if(pc&&a.includes(pc))score+=3;if(normalize(p.city||p.district||'').includes('paris'))score+=1;return score}
+async function geocodeOne(s){if(geoCache[s.address])return true;let url='https://photon.komoot.io/api/?q='+encodeURIComponent(s.address)+'&limit=5&lat=48.86&lon=2.34';const res=await fetch(url,{headers:{Accept:'application/json'}});if(!res.ok)throw Error('geocoder '+res.status);const j=await res.json();const candidates=(j.features||[]).filter(f=>Array.isArray(f.geometry?.coordinates)&&f.geometry.coordinates[0]>2.0&&f.geometry.coordinates[0]<2.65&&f.geometry.coordinates[1]>48.75&&f.geometry.coordinates[1]<48.98).sort((a,b)=>geocodeScore(b.properties||{},s.address)-geocodeScore(a.properties||{},s.address));if(!candidates.length||geocodeScore(candidates[0].properties||{},s.address)<4)return false;const [lon,lat]=candidates[0].geometry.coordinates;geoCache[s.address]={lat,lon};saveGeo();return true}
+const sleep=t=>new Promise(r=>setTimeout(r,t));
+async function refineGeocodes(){if(loadingGeo)return;loadingGeo=true;const remaining=allStores().filter(s=>s.geo!=='manual'&&!geoCache[s.address]);let ok=0,failed=0;for(let i=0;i<remaining.length;i++){const s=remaining[i];$('geoStatus').textContent=`주소 좌표 보정 중 ${i+1}/${remaining.length} · ${ok}건 성공, ${failed}건 미확인`;try{if(await geocodeOne(s)){ok++;render()}else failed++}catch(e){failed++;if(failed===3&&i<5){$('geoStatus').textContent='주소 자동 보정에 접속할 수 없어요. 임시 위치를 표시합니다.';break}}await sleep(850)}loadingGeo=false;const fine=allStores().filter(s=>s.geo==='geocoded'||s.geo==='manual').length;$('geoStatus').textContent=`주소 확인 핀 ${fine}/${allStores().length}개 · 임시 좌표 ${allStores().length-fine}개. Google 지도 링크로 개별 위치를 확인할 수 있어요.`}
+resetOptions();render();fitAll();setTimeout(()=>refineGeocodes(),1800);window.addEventListener('resize',()=>map.invalidateSize());
+</script></body></html>
